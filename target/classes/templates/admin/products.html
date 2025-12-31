@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>商品管理 - 后台管理</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/admin.css}">
+</head>
+<body>
+    <div th:replace="~{admin/layout/header}"></div>
+    
+    <div class="admin-container">
+        <div th:replace="~{admin/layout/sidebar}"></div>
+        
+        <div class="admin-content">
+            <div class="admin-page-header">
+                <h1>商品管理</h1>
+                <a th:href="@{/admin/products/add}" class="btn btn-primary">添加商品</a>
+            </div>
+            
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>商品名称</th>
+                        <th>价格</th>
+                        <th>库存</th>
+                        <th>状态</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:if="${products == null or products.isEmpty()}">
+                        <td colspan="6" class="text-center">暂无商品</td>
+                    </tr>
+                    <tr th:each="product : ${products}">
+                        <td th:text="${product.id}">1</td>
+                        <td th:text="${product.name}">商品名称</td>
+                        <td th:text="'¥' + ${#numbers.formatDecimal(product.price, 1, 2)}">¥0.00</td>
+                        <td th:text="${product.stock}">0</td>
+                        <td>
+                            <span class="badge" 
+                                  th:classappend="${product.status == 1 ? 'badge-success' : 'badge-warning'}"
+                                  th:text="${product.status == 1 ? '上架' : '下架'}">上架</span>
+                        </td>
+                        <td>
+                            <a th:href="@{/admin/products/edit/{id}(id=${product.id})}" 
+                               class="btn btn-sm btn-primary">编辑</a>
+                            <a th:href="@{/admin/products/delete/{id}(id=${product.id})}" 
+                               class="btn btn-sm btn-danger"
+                               onclick="return confirm('确定要删除吗？')">删除</a>
+                            <a th:if="${product.status == 1}" 
+                               th:href="@{/admin/products/toggle/{id}(id=${product.id}, status=0)}" 
+                               class="btn btn-sm btn-warning">下架</a>
+                            <a th:if="${product.status == 0}" 
+                               th:href="@{/admin/products/toggle/{id}(id=${product.id}, status=1)}" 
+                               class="btn btn-sm btn-success">上架</a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>
+

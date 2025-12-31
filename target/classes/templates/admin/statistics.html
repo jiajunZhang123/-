@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>销售统计 - 后台管理</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/admin.css}">
+</head>
+<body>
+    <div th:replace="~{admin/layout/header}"></div>
+    
+    <div class="admin-container">
+        <div th:replace="~{admin/layout/sidebar}"></div>
+        
+        <div class="admin-content">
+            <h1>销售统计报表</h1>
+            
+            <!-- 每日销售额 -->
+            <div class="admin-section">
+                <h2>每日销售额（最近30天）</h2>
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>日期</th>
+                            <th>销售额</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:if="${dailySales == null or dailySales.isEmpty()}">
+                            <td colspan="2" class="text-center">暂无数据</td>
+                        </tr>
+                        <tr th:each="entry : ${dailySales}">
+                            <td th:text="${entry.key}">2024-01-01</td>
+                            <td th:text="'¥' + ${#numbers.formatDecimal(entry.value, 1, 2)}">¥0.00</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- 商品销量排行 -->
+            <div class="admin-section">
+                <h2>商品销量排行（Top 10）</h2>
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>排名</th>
+                            <th>商品名称</th>
+                            <th>销量</th>
+                            <th>销售额</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:if="${productRanking == null or productRanking.isEmpty()}">
+                            <td colspan="4" class="text-center">暂无数据</td>
+                        </tr>
+                        <tr th:each="item, iterStat : ${productRanking}">
+                            <td th:text="${iterStat.count}">1</td>
+                            <td th:text="${item.name}">商品名称</td>
+                            <td th:text="${item.quantity} + ' 件'">0 件</td>
+                            <td th:text="'¥' + ${#numbers.formatDecimal(item.amount, 1, 2)}">¥0.00</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/header :: layout(~{::content}, '用户注册')}">
+<body>
+<div th:fragment="content">
+    <div class="container">
+        <div class="form-container">
+            <h2>用户注册</h2>
+            
+            <div th:if="${messageType == 'error'}" class="alert alert-error" th:text="${message}">错误信息</div>
+            <div th:if="${messageType == 'success'}" class="alert alert-success" th:text="${message}">成功信息</div>
+            
+            <form th:action="@{/register}" method="post">
+                <div class="form-group">
+                    <label for="username">用户名 *</label>
+                    <input type="text" id="username" name="username" required 
+                           placeholder="请输入用户名（3-50个字符）">
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">邮箱 *</label>
+                    <input type="email" id="email" name="email" required 
+                           placeholder="请输入邮箱地址">
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">密码 *</label>
+                    <input type="password" id="password" name="password" required 
+                           placeholder="请输入密码（至少6个字符）">
+                </div>
+                
+                <div class="form-group">
+                    <label for="confirmPassword">确认密码 *</label>
+                    <input type="password" id="confirmPassword" name="confirmPassword" required 
+                           placeholder="请再次输入密码">
+                </div>
+                
+                <button type="submit" class="btn btn-primary">注册</button>
+            </form>
+            
+            <p class="text-center">
+                已有账号？<a th:href="@{/login}">立即登录</a>
+            </p>
+        </div>
+    </div>
+</div>
+</body>
+</html>
+

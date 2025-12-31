@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>订单管理 - 后台管理</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/admin.css}">
+</head>
+<body>
+    <div th:replace="~{admin/layout/header}"></div>
+    
+    <div class="admin-container">
+        <div th:replace="~{admin/layout/sidebar}"></div>
+        
+        <div class="admin-content">
+            <h1>订单管理</h1>
+            
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>订单号</th>
+                        <th>用户ID</th>
+                        <th>金额</th>
+                        <th>状态</th>
+                        <th>创建时间</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:if="${orders == null or orders.isEmpty()}">
+                        <td colspan="6" class="text-center">暂无订单</td>
+                    </tr>
+                    <tr th:each="order : ${orders}">
+                        <td th:text="${order.orderNo}">ORD123456</td>
+                        <td th:text="${order.userId}">1</td>
+                        <td th:text="'¥' + ${#numbers.formatDecimal(order.totalAmount, 1, 2)}">¥0.00</td>
+                        <td>
+                            <span class="badge" 
+                                  th:classappend="${order.status == 3 ? 'badge-success' : (order.status == 1 ? 'badge-info' : 'badge-warning')}"
+                                  th:text="${order.status == 0 ? '待支付' : (order.status == 1 ? '已支付' : (order.status == 2 ? '已发货' : (order.status == 3 ? '已完成' : '已取消')))}">
+                                已支付
+                            </span>
+                        </td>
+                        <td th:text="${#temporals.format(order.createdAt, 'yyyy-MM-dd HH:mm:ss')}">2024-01-01</td>
+                        <td>
+                            <a th:href="@{/admin/orders/{id}(id=${order.id})}" class="btn btn-sm btn-primary">查看</a>
+                            <form th:if="${order.status == 1}" th:action="@{/admin/orders/update-status}" method="post" style="display:inline;">
+                                <input type="hidden" name="orderId" th:value="${order.id}">
+                                <input type="hidden" name="status" value="2">
+                                <button type="submit" class="btn btn-sm btn-success">发货</button>
+                            </form>
+                            <form th:if="${order.status == 2}" th:action="@{/admin/orders/update-status}" method="post" style="display:inline;">
+                                <input type="hidden" name="orderId" th:value="${order.id}">
+                                <input type="hidden" name="status" value="3">
+                                <button type="submit" class="btn btn-sm btn-info">完成</button>
+                            </form>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>
+

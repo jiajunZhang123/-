@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>订单详情 - 后台管理</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/admin.css}">
+</head>
+<body>
+    <div th:replace="~{admin/layout/header}"></div>
+    
+    <div class="admin-container">
+        <div th:replace="~{admin/layout/sidebar}"></div>
+        
+        <div class="admin-content">
+            <div class="admin-page-header">
+                <h1>订单详情</h1>
+                <a th:href="@{/admin/orders}" class="btn btn-secondary">返回列表</a>
+            </div>
+            
+            <div th:if="${order != null}">
+                <div class="admin-card">
+                    <h2>订单信息</h2>
+                    <table class="admin-table">
+                        <tr>
+                            <th width="150">订单号</th>
+                            <td th:text="${order.orderNo}">ORD123456</td>
+                        </tr>
+                        <tr>
+                            <th>用户ID</th>
+                            <td th:text="${order.userId}">1</td>
+                        </tr>
+                        <tr>
+                            <th>订单状态</th>
+                            <td>
+                                <span class="badge" 
+                                      th:classappend="${order.status == 3 ? 'badge-success' : (order.status == 1 ? 'badge-info' : (order.status == 2 ? 'badge-warning' : 'badge-secondary'))}"
+                                      th:text="${order.status == 0 ? '待支付' : (order.status == 1 ? '已支付' : (order.status == 2 ? '已发货' : (order.status == 3 ? '已完成' : '已取消')))}">
+                                    已支付
+                                </span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>订单金额</th>
+                            <td th:text="'¥' + ${#numbers.formatDecimal(order.totalAmount, 1, 2)}">¥0.00</td>
+                        </tr>
+                        <tr>
+                            <th>创建时间</th>
+                            <td th:text="${#temporals.format(order.createdAt, 'yyyy-MM-dd HH:mm:ss')}">2024-01-01 12:00:00</td>
+                        </tr>
+                        <tr>
+                            <th>更新时间</th>
+                            <td th:text="${order.updatedAt != null ? #temporals.format(order.updatedAt, 'yyyy-MM-dd HH:mm:ss') : '-'}">2024-01-01 12:00:00</td>
+                        </tr>
+                    </table>
+                </div>
+                
+                <div class="admin-card" style="margin-top: 20px;">
+                    <h2>订单明细</h2>
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>商品名称</th>
+                                <th>单价</th>
+                                <th>数量</th>
+                                <th>小计</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:if="${orderItems == null or orderItems.isEmpty()}">
+                                <td colspan="4" class="text-center">暂无明细</td>
+                            </tr>
+                            <tr th:each="item : ${orderItems}">
+                                <td th:text="${item.productName}">商品名称</td>
+                                <td th:text="'¥' + ${#numbers.formatDecimal(item.productPrice, 1, 2)}">¥0.00</td>
+                                <td th:text="${item.quantity}">1</td>
+                                <td th:text="'¥' + ${#numbers.formatDecimal(item.subtotal, 1, 2)}">¥0.00</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="admin-card" style="margin-top: 20px;" th:if="${order.status == 1 or order.status == 2}">
+                    <h2>订单操作</h2>
+                    <form th:if="${order.status == 1}" th:action="@{/admin/orders/update-status}" method="post">
+                        <input type="hidden" name="orderId" th:value="${order.id}">
+                        <input type="hidden" name="status" value="2">
+                        <button type="submit" class="btn btn-success">标记为已发货</button>
+                    </form>
+                    <form th:if="${order.status == 2}" th:action="@{/admin/orders/update-status}" method="post">
+                        <input type="hidden" name="orderId" th:value="${order.id}">
+                        <input type="hidden" name="status" value="3">
+                        <button type="submit" class="btn btn-info">标记为已完成</button>
+                        <small style="display: block; margin-top: 10px; color: #666;">完成订单后，系统将自动发送邮件通知用户确认收货</small>
+                    </form>
+                </div>
+            </div>
+            
+            <div th:if="${order == null}" class="admin-card">
+                <p class="text-center">订单不存在</p>
+                <div class="text-center" style="margin-top: 20px;">
+                    <a th:href="@{/admin/orders}" class="btn btn-primary">返回订单列表</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+

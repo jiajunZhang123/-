@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>客户管理 - 后台管理</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/admin.css}">
+</head>
+<body>
+    <div th:replace="~{admin/layout/header}"></div>
+    
+    <div class="admin-container">
+        <div th:replace="~{admin/layout/sidebar}"></div>
+        
+        <div class="admin-content">
+            <h1>客户管理</h1>
+            
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>用户名</th>
+                        <th>邮箱</th>
+                        <th>状态</th>
+                        <th>注册时间</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:if="${users == null or users.isEmpty()}">
+                        <td colspan="6" class="text-center">暂无用户</td>
+                    </tr>
+                    <tr th:each="user : ${users}">
+                        <td th:text="${user.id}">1</td>
+                        <td th:text="${user.username}">用户名</td>
+                        <td th:text="${user.email}">email@example.com</td>
+                        <td>
+                            <span class="badge" 
+                                  th:classappend="${user.status == 1 ? 'badge-success' : 'badge-warning'}"
+                                  th:text="${user.status == 1 ? '启用' : '禁用'}">启用</span>
+                        </td>
+                        <td th:text="${#temporals.format(user.createdAt, 'yyyy-MM-dd HH:mm:ss')}">2024-01-01</td>
+                        <td>
+                            <a th:if="${user.status == 1}" 
+                               th:href="@{/admin/users/toggle/{id}(id=${user.id}, status=0)}" 
+                               class="btn btn-sm btn-warning">禁用</a>
+                            <a th:if="${user.status == 0}" 
+                               th:href="@{/admin/users/toggle/{id}(id=${user.id}, status=1)}" 
+                               class="btn btn-sm btn-success">启用</a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>
+
