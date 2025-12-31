@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>编辑商品 - 后台管理</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/admin.css}">
+</head>
+<body>
+    <div th:replace="~{admin/layout/header}"></div>
+    
+    <div class="admin-container">
+        <div th:replace="~{admin/layout/sidebar}"></div>
+        
+        <div class="admin-content">
+            <div class="admin-page-header">
+                <h1>编辑商品</h1>
+                <a th:href="@{/admin/products}" class="btn btn-secondary">返回列表</a>
+            </div>
+            
+            <form th:action="@{/admin/products/edit}" method="post" class="admin-form" th:object="${product}" enctype="multipart/form-data">
+                <input type="hidden" th:field="*{id}">
+                
+                <div class="form-group">
+                    <label for="name">商品名称 *</label>
+                    <input type="text" id="name" th:field="*{name}" required placeholder="请输入商品名称">
+                </div>
+                
+                <div class="form-group">
+                    <label for="description">商品描述</label>
+                    <textarea id="description" th:field="*{description}" rows="5" placeholder="请输入商品描述"></textarea>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="price">价格 *</label>
+                        <input type="number" id="price" th:field="*{price}" step="0.01" min="0" required placeholder="0.00">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="stock">库存 *</label>
+                        <input type="number" id="stock" th:field="*{stock}" min="0" required placeholder="0">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>当前图片</label>
+                    <div th:if="${product.image != null and !product.image.isEmpty()}" style="margin-bottom: 10px;">
+                        <img th:src="${product.image.startsWith('/') ? '/shop_v4' + product.image : '/shop_v4/' + product.image}" 
+                             alt="当前图片" 
+                             style="max-width: 200px; max-height: 200px; border: 1px solid #ddd; padding: 5px;">
+                    </div>
+                    <div th:if="${product.image == null or product.image.isEmpty()}" style="color: #999; margin-bottom: 10px;">
+                        暂无图片
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="imageFile">上传新图片（可选）</label>
+                    <input type="file" id="imageFile" name="imageFile" accept="image/*">
+                    <small class="form-text">支持格式：jpg, jpeg, png, gif, bmp, webp，最大10MB。如果上传新图片，将替换当前图片。</small>
+                    <div id="imagePreview" style="margin-top: 10px; display: none;">
+                        <img id="previewImg" src="" alt="预览图" style="max-width: 200px; max-height: 200px; border: 1px solid #ddd; padding: 5px;">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="image">或输入图片URL（可选）</label>
+                    <input type="text" id="image" th:field="*{image}" placeholder="如果上传了图片文件，此项将被忽略">
+                </div>
+                
+                <div class="form-group">
+                    <label for="status">状态</label>
+                    <select id="status" th:field="*{status}">
+                        <option value="1">上架</option>
+                        <option value="0">下架</option>
+                    </select>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">保存</button>
+                    <a th:href="@{/admin/products}" class="btn btn-secondary">取消</a>
+                </div>
+            </form>
+            
+            <script>
+                // 图片预览功能
+                document.getElementById('imageFile').addEventListener('change', function(e) {
+                    const file = e.target.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            document.getElementById('previewImg').src = e.target.result;
+                            document.getElementById('imagePreview').style.display = 'block';
+                        };
+                        reader.readAsDataURL(file);
+                    } else {
+                        document.getElementById('imagePreview').style.display = 'none';
+                    }
+                });
+            </script>
+        </div>
+    </div>
+</body>
+</html>
+

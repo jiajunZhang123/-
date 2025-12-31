@@ -1,0 +1,76 @@
+spring:
+  application:
+    name: shop-v4
+  
+  # 数据源配置
+  datasource:
+    url: jdbc:mysql://localhost:3306/shop?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai
+    username: shop
+    password: shop
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  
+  # JPA配置
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+        format_sql: true
+  
+  # Thymeleaf配置
+  thymeleaf:
+    prefix: classpath:/templates/
+    suffix: .html
+    encoding: UTF-8
+    mode: HTML
+    cache: false
+  
+  # 静态资源
+  web:
+    resources:
+      static-locations: classpath:/static/
+  
+  # 文件上传
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 10MB
+      max-request-size: 10MB
+  
+  # 邮件配置（QQ邮箱）
+  mail:
+    host: smtp.qq.com
+    port: 587
+    username: 3866163461@qq.com  # 请修改为您的QQ邮箱地址
+    password: qvqunqypfvllceaa  # QQ邮箱授权码
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
+
+# 服务器配置
+server:
+  port: 8080
+  servlet:
+    context-path: /shop_v4
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+
+# 日志配置
+logging:
+  level:
+    root: INFO
+    com.shop: DEBUG
+    org.springframework.web: INFO
+    org.hibernate.SQL: DEBUG
+

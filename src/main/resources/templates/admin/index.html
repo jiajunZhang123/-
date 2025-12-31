@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>后台管理 - 首页</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/admin.css}">
+</head>
+<body>
+    <div th:replace="~{admin/layout/header}"></div>
+    
+    <div class="admin-container">
+        <div th:replace="~{admin/layout/sidebar}"></div>
+        
+        <div class="admin-content">
+            <h1>仪表盘</h1>
+            
+            <!-- 统计卡片 -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3>用户总数</h3>
+                    <p class="stat-value" th:text="${totalUsers ?: 0}">0</p>
+                </div>
+                <div class="stat-card">
+                    <h3>商品总数</h3>
+                    <p class="stat-value" th:text="${totalProducts ?: 0}">0</p>
+                </div>
+                <div class="stat-card">
+                    <h3>订单总数</h3>
+                    <p class="stat-value" th:text="${totalOrders ?: 0}">0</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

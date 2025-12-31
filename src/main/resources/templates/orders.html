@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/header :: layout(~{::content}, '我的订单')}">
+<body>
+<div th:fragment="content">
+    <div class="container">
+        <div class="page-header">
+            <h1>我的订单</h1>
+        </div>
+        
+        <div th:if="${orders == null or orders.isEmpty()}" class="empty-state">
+            <p>暂无订单</p>
+            <a th:href="@{/products}" class="btn btn-primary">去购物</a>
+        </div>
+        
+        <div th:if="${orders != null and !orders.isEmpty()}" class="orders-list">
+            <div th:each="order : ${orders}" class="order-card">
+                <div class="order-header">
+                    <div class="order-info">
+                        <span class="order-no">订单号：<span th:text="${order.orderNo}">ORD123456</span></span>
+                        <span class="order-date" 
+                              th:text="${#temporals.format(order.createdAt, 'yyyy-MM-dd HH:mm:ss')}">2024-01-01 12:00:00</span>
+                    </div>
+                    <div class="order-status">
+                        <span class="badge" 
+                              th:classappend="${order.status == 3 ? 'badge-success' : (order.status == 1 ? 'badge-info' : 'badge-warning')}"
+                              th:text="${order.status == 0 ? '待支付' : (order.status == 1 ? '已支付' : (order.status == 2 ? '已发货' : (order.status == 3 ? '已完成' : '已取消')))}">
+                            已支付
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="order-footer">
+                    <div class="order-total">
+                        订单总额：<strong th:text="'¥' + ${#numbers.formatDecimal(order.totalAmount, 1, 2)}">¥0.00</strong>
+                    </div>
+                    <div class="order-actions">
+                        <a th:href="@{/order/{id}(id=${order.id})}" class="btn btn-sm btn-primary">查看详情</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
+

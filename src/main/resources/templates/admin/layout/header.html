@@ -1,0 +1,10 @@
+<div class="admin-header">
+    <div class="admin-header-left">
+        <h1>后台管理系统</h1>
+    </div>
+    <div class="admin-header-right">
+        <span>欢迎，<span th:text="${session.adminUsername}">管理员</span></span>
+        <a th:href="@{/admin/logout}" class="btn btn-sm btn-danger">退出</a>
+    </div>
+</div>
+

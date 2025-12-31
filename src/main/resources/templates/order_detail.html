@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/header :: layout(~{::content}, '订单详情')}">
+<body>
+<div th:fragment="content">
+    <div class="container">
+        <div class="page-header">
+            <h1>订单详情</h1>
+        </div>
+        
+        <div th:if="${order != null}" class="order-detail">
+            <div class="order-info-card">
+                <h2>订单信息</h2>
+                <div class="info-row">
+                    <span class="info-label">订单编号：</span>
+                    <span class="info-value" th:text="${order.orderNo}">ORD123456</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">订单状态：</span>
+                    <span class="info-value">
+                        <span class="badge" 
+                              th:classappend="${order.status == 3 ? 'badge-success' : (order.status == 1 ? 'badge-info' : 'badge-warning')}"
+                              th:text="${order.status == 0 ? '待支付' : (order.status == 1 ? '已支付' : (order.status == 2 ? '已发货' : (order.status == 3 ? '已完成' : '已取消')))}">
+                            已支付
+                        </span>
+                    </span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">订单金额：</span>
+                    <span class="info-value" th:text="'¥' + ${#numbers.formatDecimal(order.totalAmount, 1, 2)}">¥0.00</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">创建时间：</span>
+                    <span class="info-value" 
+                          th:text="${#temporals.format(order.createdAt, 'yyyy-MM-dd HH:mm:ss')}">2024-01-01 12:00:00</span>
+                </div>
+            </div>
+            
+            <div class="order-actions">
+                <a th:href="@{/orders}" class="btn btn-secondary">返回订单列表</a>
+            </div>
+        </div>
+        
+        <div th:if="${order == null}" class="empty-state">
+            <p>订单不存在</p>
+            <a th:href="@{/orders}" class="btn btn-primary">返回订单列表</a>
+        </div>
+    </div>
+</div>
+</body>
+</html>
+

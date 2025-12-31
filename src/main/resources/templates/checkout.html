@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/header :: layout(~{::content}, '订单结算')}">
+<body>
+<div th:fragment="content">
+    <div class="container">
+        <div class="page-header">
+            <h1>订单结算</h1>
+        </div>
+        
+        <div th:if="${messageType == 'error'}" class="alert alert-error" th:text="${message}">错误信息</div>
+        
+        <div class="checkout-container">
+            <div class="checkout-left">
+                <h2>订单商品</h2>
+                <div class="checkout-items">
+                    <!-- 这里应该显示购物车商品，简化处理 -->
+                    <p>从购物车获取商品信息</p>
+                </div>
+            </div>
+            
+            <div class="checkout-right">
+                <div class="checkout-summary">
+                    <h2>订单总计</h2>
+                    <div class="summary-row">
+                        <span>商品总额：</span>
+                        <span>¥0.00</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>运费：</span>
+                        <span>免运费</span>
+                    </div>
+                    <div class="summary-row total">
+                        <span>总计：</span>
+                        <span>¥0.00</span>
+                    </div>
+                    
+                    <form th:action="@{/checkout}" method="post">
+                        <button type="submit" class="btn btn-primary btn-large btn-block">确认支付</button>
+                    </form>
+                    
+                    <p class="payment-note">* 这是模拟支付，订单将直接标记为已支付</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
+

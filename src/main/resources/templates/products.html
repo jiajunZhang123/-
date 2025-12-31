@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/header :: layout(~{::content}, '商品列表')}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+<div th:fragment="content">
+    <div class="container">
+        <div class="page-header">
+            <h1>商品列表</h1>
+        </div>
+        
+        <!-- 搜索框 -->
+        <div class="search-box">
+            <form th:action="@{/products}" method="get" class="search-form">
+                <input type="text" name="search" placeholder="搜索商品名称或描述..." 
+                       th:value="${search}" class="search-input">
+                <button type="submit" class="btn btn-primary">搜索</button>
+                <a th:if="${search != null and !search.isEmpty()}" th:href="@{/products}" 
+                   class="btn btn-secondary">清除</a>
+            </form>
+        </div>
+        
+        <!-- 商品列表 -->
+        <div th:if="${products == null or products.isEmpty()}" class="empty-state">
+            <p>暂无商品</p>
+        </div>
+        
+        <div th:if="${products != null and !products.isEmpty()}" class="products-grid">
+            <div th:each="product : ${products}" class="product-card">
+                <div class="product-image">
+                    <img th:if="${product.image != null and !product.image.isEmpty()}" 
+                         th:src="${product.image.startsWith('/') ? '/shop_v4' + product.image : '/shop_v4/' + product.image}" 
+                         th:alt="${product.name}"
+                         onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                    <div th:if="${product.image == null or product.image.isEmpty()}" class="no-image" style="display:none;">暂无图片</div>
+                </div>
+                <div class="product-info">
+                    <h3 class="product-name" th:text="${product.name}">商品名称</h3>
+                    <p class="product-description" 
+                       th:text="${#strings.abbreviate(product.description ?: '', 50)}">商品描述</p>
+                    <div class="product-price" th:text="'¥' + ${#numbers.formatDecimal(product.price, 1, 2)}">¥0.00</div>
+                    <div class="product-stock">库存：<span th:text="${product.stock}">0</span></div>
+                    <div class="product-actions">
+                        <a th:href="@{/product/{id}(id=${product.id})}" class="btn btn-sm btn-primary">查看详情</a>
+                        <button th:if="${product.stock > 0}" 
+                                th:onclick="'addToCart(' + ${product.id} + ')'" 
+                                class="btn btn-sm btn-success">加入购物车</button>
+                        <span th:if="${product.stock == 0}" class="btn btn-sm btn-disabled">缺货</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 分页 -->
+        <div th:if="${totalPages != null and totalPages > 1}" class="pagination">
+            <a th:if="${currentPage > 1}" 
+               th:href="@{/products(page=${currentPage - 1}, search=${search})}" 
+               class="btn btn-sm">上一页</a>
+            <span>第 <span th:text="${currentPage}">1</span> 页 / 共 <span th:text="${totalPages}">1</span> 页</span>
+            <a th:if="${currentPage < totalPages}" 
+               th:href="@{/products(page=${currentPage + 1}, search=${search})}" 
+               class="btn btn-sm">下一页</a>
+        </div>
+    </div>
+    
+    <script>
+    function addToCart(productId) {
+        fetch('/shop_v4/api/cart/add?productId=' + productId + '&quantity=1', {
+            method: 'POST'
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('已添加到购物车');
+            } else {
+                alert(data.message || '添加失败');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('操作失败，请重试');
+        });
+    }
+    </script>
+</div>
+</body>
+</html>

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>行为日志 - 后台管理</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/admin.css}">
+</head>
+<body>
+    <div th:replace="~{admin/layout/header}"></div>
+    
+    <div class="admin-container">
+        <div th:replace="~{admin/layout/sidebar}"></div>
+        
+        <div class="admin-content">
+            <h1>用户行为日志</h1>
+            
+            <!-- 筛选 -->
+            <div class="admin-filters">
+                <form method="get" action="/shop_v4/admin/logs" class="filter-form">
+                    <select name="actionType" class="status-select">
+                        <option value="">全部类型</option>
+                        <option value="view" th:selected="${actionType == 'view'}">浏览</option>
+                        <option value="purchase" th:selected="${actionType == 'purchase'}">购买</option>
+                    </select>
+                    <button type="submit" class="btn btn-primary">筛选</button>
+                    <a th:if="${actionType != null and !actionType.isEmpty()}" 
+                       th:href="@{/admin/logs}" class="btn btn-secondary">清除</a>
+                </form>
+            </div>
+            
+            <!-- 日志列表 -->
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>用户ID</th>
+                        <th>商品ID</th>
+                        <th>行为类型</th>
+                        <th>IP地址</th>
+                        <th>时间</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:if="${logs == null or logs.isEmpty()}">
+                        <td colspan="6" class="text-center">暂无日志</td>
+                    </tr>
+                    <tr th:each="log : ${logs}">
+                        <td th:text="${log.id}">1</td>
+                        <td th:text="${log.userId ?: '未登录'}">1</td>
+                        <td th:text="${log.productId ?: '未知'}">1</td>
+                        <td>
+                            <span class="badge" 
+                                  th:classappend="${log.actionType == 'purchase' ? 'badge-success' : 'badge-info'}"
+                                  th:text="${log.actionType == 'purchase' ? '购买' : '浏览'}">浏览</span>
+                        </td>
+                        <td th:text="${log.ipAddress ?: ''}">127.0.0.1</td>
+                        <td th:text="${#temporals.format(log.createdAt, 'yyyy-MM-dd HH:mm:ss')}">2024-01-01</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>
+

@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/header :: layout(~{::content}, '购物车')}">
+<body>
+<div th:fragment="content">
+    <div class="container">
+        <div class="page-header">
+            <h1>我的购物车</h1>
+        </div>
+        
+        <div th:if="${cartItems == null or cartItems.isEmpty()}" class="empty-state">
+            <p>购物车是空的</p>
+            <a th:href="@{/products}" class="btn btn-primary">去购物</a>
+        </div>
+        
+        <div th:if="${cartItems != null and !cartItems.isEmpty()}" class="cart-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>商品</th>
+                        <th>单价</th>
+                        <th>数量</th>
+                        <th>小计</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="item : ${cartItems}">
+                        <td>
+                            <div class="cart-product">
+                                <img th:if="${item.product.image != null and !item.product.image.isEmpty()}" 
+                                     th:src="${item.product.image.startsWith('/') ? '/shop_v4' + item.product.image : '/shop_v4/' + item.product.image}"
+                                     th:alt="${item.product.name}" class="cart-image">
+                                <div>
+                                    <a th:href="@{/product/{id}(id=${item.product.id})}" 
+                                       th:text="${item.product.name}">商品名称</a>
+                                    <span th:if="${item.product.status != 1}" class="badge badge-warning">已下架</span>
+                                    <span th:if="${item.product.stock < item.quantity}" class="badge badge-error">库存不足</span>
+                                </div>
+                            </div>
+                        </td>
+                        <td th:text="'¥' + ${#numbers.formatDecimal(item.product.price, 1, 2)}">¥0.00</td>
+                        <td>
+                            <input type="number" th:value="${item.quantity}" 
+                                   th:min="1" th:max="${item.product.stock}"
+                                   th:onchange="'updateQuantity(' + ${item.id} + ', this.value)'"
+                                   class="quantity-input-small">
+                        </td>
+                        <td class="subtotal" 
+                            th:text="'¥' + ${#numbers.formatDecimal(item.product.price * item.quantity, 1, 2)}">¥0.00</td>
+                        <td>
+                            <button th:onclick="'deleteCartItem(' + ${item.id} + ')'" 
+                                    class="btn btn-sm btn-danger">删除</button>
+                        </td>
+                    </tr>
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="3" class="text-right"><strong>总计：</strong></td>
+                        <td colspan="2">
+                            <strong class="total-amount" th:text="'¥' + ${#aggregates.sum(cartItems.![product.price * quantity])}">¥0.00</strong>
+                        </td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+        
+        <div th:if="${cartItems != null and !cartItems.isEmpty()}" class="cart-actions">
+            <a th:href="@{/products}" class="btn btn-secondary">继续购物</a>
+            <button onclick="checkout()" class="btn btn-primary btn-large">去结算</button>
+        </div>
+    </div>
+    
+    <script>
+    function updateQuantity(cartId, quantity) {
+        fetch('/shop_v4/api/cart/update?cartId=' + cartId + '&quantity=' + parseInt(quantity), {
+            method: 'POST'
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert(data.message || '更新失败');
+                location.reload();
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('操作失败，请重试');
+        });
+    }
+    
+    function deleteCartItem(cartId) {
+        if (!confirm('确定要删除这个商品吗？')) {
+            return;
+        }
+        
+        fetch('/shop_v4/api/cart/delete?cartId=' + cartId, {
+            method: 'POST'
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert(data.message || '删除失败');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('操作失败，请重试');
+        });
+    }
+    
+    function checkout() {
+        window.location.href = '/shop_v4/checkout';
+    }
+    </script>
+</div>
+</body>
+</html>
+

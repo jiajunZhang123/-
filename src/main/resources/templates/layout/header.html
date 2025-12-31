@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:fragment="layout (content, title)">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${title ?: '电商网站'}">电商网站</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<header class="site-header">
+    <div class="header-container">
+        <div class="header-left">
+            <h1 class="site-logo">
+                <a th:href="@{/}">电商网站</a>
+            </h1>
+        </div>
+        <nav class="header-nav">
+            <a th:href="@{/products}">商品列表</a>
+            <span th:if="${session.userId != null}">
+                <a th:href="@{/cart}">购物车</a>
+                <a th:href="@{/orders}">我的订单</a>
+                <span class="user-info">欢迎，<span th:text="${session.username}">用户</span></span>
+                <a th:href="@{/logout}" class="btn btn-sm btn-secondary">退出</a>
+            </span>
+            <span th:if="${session.userId == null}">
+                <a th:href="@{/login}" class="btn btn-sm btn-primary">登录</a>
+                <a th:href="@{/register}" class="btn btn-sm btn-secondary">注册</a>
+            </span>
+            <a th:href="@{/admin/login}" class="admin-link">管理员</a>
+        </nav>
+    </div>
+</header>
+
+<div th:replace="${content}"></div>
+
+<div th:replace="~{layout/footer}"></div>
+</body>
+</html>
